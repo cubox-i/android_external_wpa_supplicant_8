@@ -38,7 +38,7 @@ ifeq ($(BOARD_NO_APSME_ATTR),true)
 L_CFLAGS += -DNO_APSME_ATTR
 endif
 
-ifeq ($(BOARD_WLAN_DEVICE), qcwcn)
+ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE), qcwcn UNITE))
 L_CFLAGS += -DANDROID_P2P
 endif
 
@@ -1556,8 +1556,8 @@ LOCAL_MODULE := wpa_supplicant
 ifdef CONFIG_DRIVER_CUSTOM
 LOCAL_STATIC_LIBRARIES := libCustomWifi
 endif
-ifneq ($(BOARD_WPA_SUPPLICANT_PRIVATE_LIB),)
-LOCAL_STATIC_LIBRARIES += $(BOARD_WPA_SUPPLICANT_PRIVATE_LIB)
+ifneq ($(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_QCOM),)
+LOCAL_STATIC_LIBRARIES += $(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_QCOM)
 endif
 LOCAL_SHARED_LIBRARIES := libc libcutils liblog
 ifeq ($(CONFIG_TLS), openssl)
@@ -1567,6 +1567,28 @@ ifdef CONFIG_DRIVER_NL80211
 LOCAL_STATIC_LIBRARIES += libnl_2
 endif
 LOCAL_CFLAGS := $(L_CFLAGS)
+LOCAL_SRC_FILES := $(OBJS)
+LOCAL_C_INCLUDES := $(INCLUDES)
+include $(BUILD_EXECUTABLE)
+
+########################
+include $(CLEAR_VARS)
+LOCAL_MODULE := rtl_wpa_supplicant
+ifdef CONFIG_DRIVER_CUSTOM
+LOCAL_STATIC_LIBRARIES := libCustomWifi
+endif
+ifneq ($(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_RTL),)
+LOCAL_STATIC_LIBRARIES += $(BOARD_WPA_SUPPLICANT_PRIVATE_LIB_RTL)
+endif
+LOCAL_SHARED_LIBRARIES := libc libcutils liblog
+ifeq ($(CONFIG_TLS), openssl)
+LOCAL_SHARED_LIBRARIES += libcrypto libssl libkeystore_binder
+endif
+ifdef CONFIG_DRIVER_NL80211
+LOCAL_STATIC_LIBRARIES += libnl_2
+endif
+LOCAL_CFLAGS := $(L_CFLAGS)
+LOCAL_CFLAGS += -DREALTEK_WIFI_VENDOR
 LOCAL_SRC_FILES := $(OBJS)
 LOCAL_C_INCLUDES := $(INCLUDES)
 include $(BUILD_EXECUTABLE)
@@ -1585,16 +1607,16 @@ include $(BUILD_EXECUTABLE)
 #include $(BUILD_EXECUTABLE)
 #
 ########################
-#
-#local_target_dir := $(TARGET_OUT)/etc/wifi
-#
-#include $(CLEAR_VARS)
-#LOCAL_MODULE := wpa_supplicant.conf
-#LOCAL_MODULE_CLASS := ETC
-#LOCAL_MODULE_PATH := $(local_target_dir)
-#LOCAL_SRC_FILES := $(LOCAL_MODULE)
-#include $(BUILD_PREBUILT)
-#
+
+local_target_dir := $(TARGET_OUT)/etc/wifi
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := wpa_supplicant.conf
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_PATH := $(local_target_dir)
+LOCAL_SRC_FILES := $(LOCAL_MODULE)
+include $(BUILD_PREBUILT)
+
 ########################
 
 include $(CLEAR_VARS)
