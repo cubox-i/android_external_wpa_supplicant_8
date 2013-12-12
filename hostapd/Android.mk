@@ -33,7 +33,7 @@ L_CFLAGS += -DNO_APSME_ATTR
 endif
 
 ifeq ($(BOARD_WLAN_DEVICE), bcmdhd)
-L_CFLAGS += -DANDROID_P2P
+#L_CFLAGS += -DANDROID_P2P
 endif
 
 ifeq ($(BOARD_WLAN_DEVICE),$(filter $(BOARD_WLAN_DEVICE), qcwcn UNITE))
